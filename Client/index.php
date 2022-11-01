@@ -1,5 +1,6 @@
 <?php
-    include_once "../db/DB.classes.php";
+    include_once "./classes/db.class.php";
+    include_once "./classes/variables.php";
     $db = new DB();
 ?>
 <!DOCTYPE html>
@@ -13,14 +14,16 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title></title>
         <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="">
     </head>
     <body>
-
         <?php
-            
+            if (isset($_COOKIE['gameID'])) {
+                echo `Game Set`;
+            }
+            else {
+                echo $chatPage;
+            }
         ?>
-
     </body>
 </html>
