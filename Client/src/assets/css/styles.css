@@ -66,6 +66,7 @@ input[type=reset] {
     justify-content: flex-start;
 }
 .fromMe {
+    margin: 5px;
     font-size: larger;
     border-radius: 5px;
     padding: 20px;
@@ -74,6 +75,7 @@ input[type=reset] {
     text-align: right;
 }
 .fromOther {
+    margin: 5px;
     font-size: larger;
     border-radius: 5px;
     padding: 20px;
