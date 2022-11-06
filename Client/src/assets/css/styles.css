@@ -48,10 +48,25 @@ input[type=reset] {
     border-radius: 5px;
     padding: 5px;
 }
+.barButtons {
+    display: flex;
+    justify-content: center;
+}
 .gameStart {
     font-size: xx-large;
     padding: 10px;
-    background-color: var(--silver);
+    background-color: var(--drkBlu);
+    border: none;
+    color: black;
+    text-decoration: none;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.logOut {
+    font-size: xx-large;
+    padding: 10px;
+    background-color: var(--drkGrn);
     border: none;
     color: black;
     text-decoration: none;
@@ -81,6 +96,15 @@ input[type=reset] {
     padding: 20px;
     color: white;
     background-color: var(--drkBlu);
+    text-align: left;
+}
+.fromSystem {
+    margin: 5px;
+    font-size: larger;
+    border-radius: 5px;
+    padding: 20px;
+    color: white;
+    background-color: var(--drkGry);
     text-align: left;
 }
 .sendBox {

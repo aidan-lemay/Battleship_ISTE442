@@ -1,7 +1,13 @@
 <?php
 session_start();
 error_reporting(E_ALL ^ E_NOTICE);
-$namef = $_POST['name'];
+
+require_once("./assets/db/db.class.php");
+$db = new DB();
+
+include_once("./assets/secrets.php");
+
+$name = $_POST['fname'] . " " . $_POST['lname'];
 $submit = $_POST['sub'];
 
 if (isset($_SESSION['name'])) {
@@ -9,11 +15,13 @@ if (isset($_SESSION['name'])) {
 }
 
 if (isset($submit)) {
-    if (!empty($_POST['name'])) {
-        $_SESSION['name'] = $namef;
+    if (!empty($_POST['fname']) && !empty($_POST['lname']) && !empty($_POST['email']) && !empty($_POST['pwd'])) {
+        $pwd = password_hash($_POST['pwd'], PASSWORD_BCRYPT);
+        $db -> createUser($_POST['fname'], $_POST['lname'], $_POST['email'], $pwd);
+        $_SESSION['name'] = $name;
         header("location: index.php");
     } else {
-        $error = "Welcome! Please type your name below to begin chatting.";
+        $error = "Sorry, you must type at least 1 character for your name";
     }
 }
 ?>
@@ -76,7 +84,10 @@ if (isset($submit)) {
     <div id="nameBox">
         <h2>Welcome! Please type your name below to begin chatting.</h2>
         <form method="post" action="">
-            <input class="inputT" type="text" name="name" placeholder="Name" />
+            <input class="inputT" type="text" name="fname" placeholder="First Name" />
+            <input class="inputT" type="text" name="lname" placeholder="Last Name" />
+            <input class="inputT" type="text" name="email" placeholder="Email" />
+            <input class="inputT" type="text" name="pwd" placeholder="Password" />
             <input class="inputS" type="submit" name="sub" value="Start chatting!" />
         </form>
         <p style="color: red;"><?php echo $error; ?></p>
