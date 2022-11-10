@@ -2,7 +2,7 @@
 
 ## Running the Client Server and Frontend
 > Local Hosting
-* From the project root, run `php -S localhost:8000 ./Client/src`
+* CD into `./Client/src` and run `php -S localhost:8000`
 * In another terminal, also from the project root, run `php ./Client/bin/chat-server.php`
 
 ## Styleguides and information

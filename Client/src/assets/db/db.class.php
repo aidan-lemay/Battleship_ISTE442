@@ -1,47 +1,65 @@
 <?php
     class DB {
-        
-        private $conn;
+        public $dbh;
 
-        function __construct() {
-
-            // Create connection
-            $conn = new mysqli("localhost", "battleship_usr", "B@TTLESH1P");
-
-            // Check connection
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
+        function __construct(){
+            $this->dbh = mysqli_connect("localhost", "battleship_usr", "B@TTLESH1P", "442Battleship");
+            if($this->dbh->connect_error){
+                die("Connection failed: " . $this->dbh->connect_error);
             }
-        }
-        // Selects
-        function checkUser($email) {
-            // return pg_query_params($this->conn,"SELECT uid FROM users WHERE email = $1",array($email));
+        }//end constructor
 
-            $sql = "SELECT uid FROM users WHERE email = ?"; // SQL with parameters
-            $stmt = $this->conn->query($sql);
+        // SELECT
+        function checkUser($email){
+            $data = array();
+            $stmt = mysqli_prepare($this->dbh, "SELECT UID FROM Users WHERE email = ?");
             $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $result = $stmt->get_result(); // get the mysqli result
-            $isUser = $result->fetch_assoc(); // fetch data
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if ($row = mysqli_fetch_all($result)){
+               $data = $row;
+            }
 
-            if ($isUser == "") {
+            if (count($data) == 0) {
                 return false;
             }
             else {
                 return true;
             }
-        } // End checkUser
+        }//end checkUser
 
-        // Inserts
-        function createUser($fname, $lname, $email, $hpass) {
-            if(!$this->checkUser($email)) {
-                $params = array($fname, $lname, $email, $hpass);
-                return pg_query_params($this->conn,"INSERT INTO users (fname, lname, email, hpass) VALUES($1,$2,$3,$4)",$params);
-            } else {
+        function signIn($email) {
+            $data = array();
+            $stmt = mysqli_prepare($this->dbh, "SELECT hPass, fname, lname FROM Users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if ($row = mysqli_fetch_all($result)){
+               $data = $row;
+            }
+
+            if (count($data) == 0) {
                 return false;
             }
-        } // End createUser
-        function newMessage() {
+            else {
+                return $data;
+            }
+        } // end signIn
 
-        } // End newMessage
-    }
+        //  INSERT
+        function createUser($fname, $lname, $email, $hpass) {
+            if ($this->checkUser($email)) {
+                return false;
+            }
+            else {
+                $stmt = $this->dbh->prepare("INSERT INTO Users (fname, lname, email, hpass) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("ssss",$fname, $lname, $email, $hpass);
+                $res = mysqli_stmt_execute($stmt);
+                echo $res;
+                return $res;
+            }
+            
+        }//end createUser
+
+    }//end class DB
+?>

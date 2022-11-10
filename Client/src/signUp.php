@@ -5,6 +5,8 @@ error_reporting(E_ALL ^ E_NOTICE);
 require_once("./assets/db/db.class.php");
 $db = new DB();
 
+$error = "";
+
 include_once("./assets/secrets.php");
 
 $name = $_POST['fname'] . " " . $_POST['lname'];
@@ -16,12 +18,19 @@ if (isset($_SESSION['name'])) {
 
 if (isset($submit)) {
     if (!empty($_POST['fname']) && !empty($_POST['lname']) && !empty($_POST['email']) && !empty($_POST['pwd'])) {
-        $pwd = password_hash($_POST['pwd'], PASSWORD_BCRYPT);
-        $db -> createUser($_POST['fname'], $_POST['lname'], $_POST['email'], $pwd);
-        $_SESSION['name'] = $name;
-        header("location: index.php");
+        $hpwd = password_hash($_POST['pwd'], PASSWORD_BCRYPT);
+        $uid = $db -> createUser($_POST['fname'], $_POST['lname'], $_POST['email'], $hpwd);
+        if (!$uid) {
+            $error = "You Have Already Been Signed Up";
+        }
+        else {
+            $_SESSION['name'] = $name;
+            $_SESSION['uid'] = $uid;
+            header("location: index.php");
+        }
+
     } else {
-        $error = "Sorry, you must type at least 1 character for your name";
+        $error = "All input fields must be filled out!";
     }
 }
 ?>
@@ -31,53 +40,7 @@ if (isset($submit)) {
 <head>
     <title>Battleship - Login</title>
     <script src="jquery.min.js"></script>
-    <style type="text/css">
-        body {
-            background: #edeff1;
-            font-family: sans-serif;
-        }
-
-        #nameBox {
-            padding: 50px 15px;
-            background: #fff;
-            box-shadow: 0px 0px 8px #c5c5c5;
-            border-radius: 2px;
-            width:50%;
-            text-align: center;
-            margin: auto;
-            margin-top: 10%;
-        }
-
-        .inputT {
-            padding: 8px 15px;
-            outline: none;
-            border: none;
-            box-shadow: 0px 0px 21px #cad6e2;
-            border-radius: 100px;
-            width: 300px;
-            margin: 15px 0px;
-        }
-
-        .inputS {
-            border: none;
-            background: #399cff;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 100px;
-            text-decoration: none;
-            box-shadow: 0px 0px 21px #3a81c7;
-            outline: none;
-        }
-
-        .inputS:hover,
-        .inputS:focus {
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            cursor: pointer;
-            background: #357bc1;
-        }
-    </style>
+    <link rel="stylesheet" href="./assets/css/signPages.css"></link>
 </head>
 
 <body>
@@ -86,11 +49,16 @@ if (isset($submit)) {
         <form method="post" action="">
             <input class="inputT" type="text" name="fname" placeholder="First Name" />
             <input class="inputT" type="text" name="lname" placeholder="Last Name" />
+            <br />
             <input class="inputT" type="text" name="email" placeholder="Email" />
             <input class="inputT" type="text" name="pwd" placeholder="Password" />
+            <br />
             <input class="inputS" type="submit" name="sub" value="Start chatting!" />
         </form>
-        <p style="color: red;"><?php echo $error; ?></p>
+        <div id="signIn" class="signIn">
+            <a href="signIn.php" class="inputI">Sign In with Existing Account Instead!</a>
+        </div>
+        <div id="error" class="error"><?php echo $error ?></div>
     </div>
 </body>
 

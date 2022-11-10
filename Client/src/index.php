@@ -38,7 +38,7 @@ $name = $_SESSION['name'];
 
     <script type="text/javascript">
         var conn = new WebSocket('ws://localhost:8080');
-        conn.onopen = function(e) {
+        conn.onopen = function() {
             $("#messages").append(`<p class='fromSystem'><?php echo $name; ?> Has Joined The Chat</p>`);
             conn.send(`<p class='fromSystem'><?php echo $name; ?> Has Joined The Chat</p>`);
             $("#msgField").val("");
@@ -47,6 +47,12 @@ $name = $_SESSION['name'];
         conn.onmessage = function(e) {
             $('#messages').append(`${e.data}`);
         };
+
+        conn.onclose = function(){
+            conn.send(`<p class='fromSystem'><?php echo $name; ?> Has Left The Chat</p>`);
+            $("#msgField").val("");
+        };
+
         $("#msgField").keypress(function(e) {
             e.preventDefault;
             var key = e.which;
