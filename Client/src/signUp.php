@@ -9,7 +9,6 @@ $error = "";
 
 include_once("./assets/secrets.php");
 
-$name = $_POST['fname'] . " " . $_POST['lname'];
 $submit = $_POST['sub'];
 
 if (isset($_SESSION['name'])) {
@@ -18,6 +17,14 @@ if (isset($_SESSION['name'])) {
 
 if (isset($submit)) {
     if (!empty($_POST['fname']) && !empty($_POST['lname']) && !empty($_POST['email']) && !empty($_POST['pwd'])) {
+
+        // $pwd = filter_var($_POST['pwd'], FILTER_SANITIZE_STRING);
+        // $fname = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
+        // $lname = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
+        // $email = filter_var($_POST['email'], FILTER_SANITIZE_STRING);
+
+        $name = $fname . " " . $lname;
+
         $hpwd = password_hash($_POST['pwd'], PASSWORD_BCRYPT);
         $uid = $db -> createUser($_POST['fname'], $_POST['lname'], $_POST['email'], $hpwd);
         if (!$uid) {
@@ -51,7 +58,7 @@ if (isset($submit)) {
             <input class="inputT" type="text" name="lname" placeholder="Last Name" />
             <br />
             <input class="inputT" type="text" name="email" placeholder="Email" />
-            <input class="inputT" type="text" name="pwd" placeholder="Password" />
+            <input class="inputT" type="password" name="pwd" placeholder="Password" />
             <br />
             <input class="inputS" type="submit" name="sub" value="Start chatting!" />
         </form>

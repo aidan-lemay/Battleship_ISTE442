@@ -24,7 +24,9 @@ class Chat implements MessageComponentInterface {
 
         foreach ($this->clients as $client) {
             if ($from !== $client) {
+                // do sanitize here move JS to here, get rid of string encoding from JS
                 // The sender is not the receiver, send to each client connected
+                // Add message to DB
                 $client->send($msg);
             }
         }

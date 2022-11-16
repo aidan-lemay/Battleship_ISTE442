@@ -4,6 +4,9 @@ if (!isset($_SESSION['name'])) {
     header("location: signUp.php");
 }
 $name = $_SESSION['name'];
+$uid = $_SESSION['uid'];
+include_once('./assets/db/db.class.php');
+$db = new DB();
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,7 +24,7 @@ $name = $_SESSION['name'];
 
         <div class="barButtons">
             <div class="gameStart">
-                <a class="gameStart">START A NEW GAME</a>
+                <a class="gameStart" href="./game.php">START A NEW GAME</a>
             </div>
             
             <div class="logOut">
@@ -38,6 +41,13 @@ $name = $_SESSION['name'];
 
     <script type="text/javascript">
         var conn = new WebSocket('ws://localhost:8080');
+
+        var sanitizeHTML = function (str) {
+            return str.replace(/[^\w. ]/gi, function (c) {
+                return '&#' + c.charCodeAt(0) + ';';
+            });
+        };
+
         conn.onopen = function() {
             $("#messages").append(`<p class='fromSystem'><?php echo $name; ?> Has Joined The Chat</p>`);
             conn.send(`<p class='fromSystem'><?php echo $name; ?> Has Joined The Chat</p>`);
@@ -56,7 +66,8 @@ $name = $_SESSION['name'];
         $("#msgField").keypress(function(e) {
             e.preventDefault;
             var key = e.which;
-            var msgField = $("#msgField").val();
+            var msgField = sanitizeHTML($("#msgField").val());
+            // need to get contents of msgfield into php ... api?
             if (key == 13) {
                 $("#messages").append(`<p class='fromMe'>Me: ${msgField}</p>`);
                 conn.send("<p class='fromOther'><?php echo $name; ?>: " + msgField + "</p>");

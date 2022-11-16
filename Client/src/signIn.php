@@ -53,7 +53,7 @@ if (isset($submit)) {
         <h2>Welcome! Please type your name below to begin chatting.</h2>
         <form method="post" action="">
             <input class="inputT" type="text" name="email" placeholder="Email" />
-            <input class="inputT" type="text" name="pwd" placeholder="Password" />
+            <input class="inputT" type="password" name="pwd" placeholder="Password" />
             <br />
             <input class="inputS" type="submit" name="sub" value="Start chatting!" />
         </form>

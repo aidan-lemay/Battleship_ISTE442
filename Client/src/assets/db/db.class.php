@@ -46,6 +46,38 @@
             }
         } // end signIn
 
+        function getGames() {
+            $data = array();
+            $stmt = mysqli_prepare($this->dbh, "SELECT uid FROM Users WHERE gameStatus = 2");
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if ($row = mysqli_fetch_all($result)){
+               $data = $row;
+            }
+
+            // Loop through and append data
+            $out = `
+                <link rel="stylesheet" href="./assets/css/styles.css">
+                <table class="joinTable">
+                    <tr>
+                        <th>User Name</th>
+                        <th>Join</th>
+                    </tr>
+                    <tr>
+                        <td>Test Name</td>
+                        <td><a href="">Test Join</a></td>
+                    </tr>
+                </table>
+            `;
+
+            if (count($data) == 0) {
+                return false;
+            }
+            else {
+                return $data;
+            }
+        }
+
         //  INSERT
         function createUser($fname, $lname, $email, $hpass) {
             if ($this->checkUser($email)) {
@@ -55,11 +87,17 @@
                 $stmt = $this->dbh->prepare("INSERT INTO Users (fname, lname, email, hpass) VALUES (?, ?, ?, ?)");
                 $stmt->bind_param("ssss",$fname, $lname, $email, $hpass);
                 $res = mysqli_stmt_execute($stmt);
-                echo $res;
                 return $res;
             }
             
         }//end createUser
+
+        function newChatMsg($uid, $msg) {
+            $dte = new DateTime();
+            $stmt = $this->dbh->prepare("INSERT INTO Users (fromUser, content, datestamp) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss",$uid, $msg, $dte);
+            return mysqli_stmt_execute($stmt);
+        }
 
     }//end class DB
 ?>
