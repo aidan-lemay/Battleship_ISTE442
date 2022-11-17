@@ -127,6 +127,7 @@ th, td {
     padding: 10px;
 }
 .ships {
+    cursor: move;
     background-color: white;
     stroke: black;
     stroke-width: 1px;

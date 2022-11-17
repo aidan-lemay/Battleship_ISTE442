@@ -105,40 +105,53 @@ $db = new DB();
                 }
 
                 // create ships
-                const nRows = 1;
-                const nCols = 1;
 
-                for ( let i = 0; i < nRows; i++ ) {
-                    let row = 0,
-                        len = 2;
+                const sX = 10;
+                const sY = 0;
 
-                    if ( ( i % 2 ) !== 0 ) {
-                        row = 1;
-                        len = 2;
-                    }
-
-                    for ( let j = 0; j < len; j++ ) {
-                    cx = ( j + 1 ) * 100 + row;
-                    cy = ( i + 1 ) * 80;
-
-                    board += `<circle class='ships' cx='${cx}' cy='${cy}' r='20' id='p${i}${j}'
-                                onmousedown='setMove( "p${i}${j}" );' />`;
-                    }
-                }
+                board += `<image x='${sX}' y='${sY}' width="${w - 10}" id="Battleship" href="./assets/img/ships/battleship.min.svg" class="ships" onmousedown='setMove( "Battleship" );' />`;
+                board += `<image x='${sX}' y='${sY + 20}' width="${w - 10}" id="Carrier" href="./assets/img/ships/carrier.min.svg" class="ships" onmousedown='setMove( "Carrier" );' />`;
+                board += `<image x='${sX}' y='${sY + 45}' width="${w - 10}" id="Cruiser" href="./assets/img/ships/cruiser.min.svg" class="ships" onmousedown='setMove( "Cruiser" );' />`;
+                board += `<image x='${sX}' y='${sY + 65}' width="${w - 10}" id="Destroyer" href="./assets/img/ships/destroyer.min.svg" class="ships" onmousedown='setMove( "Destroyer" );' />`;
+                board += `<image x='${sX}' y='${sY + 85}' width="${w - 10}" id="Submarine" href="./assets/img/ships/submarine.min.svg" class="ships" onmousedown='setMove( "Submarine" );' />`;
 
                 document.getElementById( `board` ).innerHTML = board;
             }
 
+            function setMove( id ) {
+                moverId = id;
+
+                myX = document.getElementById( moverId ).getAttribute( `x` );
+                myY = document.getElementById( moverId ).getAttribute( `y` );
+            }
+
+            function moveMouse( evt ) {
+                if ( moverId ) {
+
+                    left = document.getElementsByTagName(`svg`)[0].getBoundingClientRect().left;
+                    y =  document.getElementsByTagName(`svg`)[0].getBoundingClientRect().y;
+
+                    // Prevents text selection while dragging elements
+                    evt.preventDefault();
+
+                    const moverEle = document.getElementById( moverId );
+
+                    // actually change the location
+                    moverEle.setAttribute( `x`, evt.clientX-left );
+                    moverEle.setAttribute( `y`, evt.clientY-y );
+                }
+            }
+
             function releaseMouse() {
                 if ( moverId ) {
-                    let curX = document.getElementById(moverId).getAttribute('cx');
-                    let curY = document.getElementById(moverId).getAttribute('cy');
+                    let curX = document.getElementById(moverId).getAttribute('x');
+                    let curY = document.getElementById(moverId).getAttribute('y');
                     let hit = checkHit(curX, curY);
 
                     if (!hit) {
                         let moverEle = document.getElementById(moverId);
-                        moverEle.setAttribute('cx', myX);
-                        moverEle.setAttribute('cy', myY);
+                        moverEle.setAttribute('x', myX);
+                        moverEle.setAttribute('y', myY);
                     }
                     else {
 
@@ -157,12 +170,12 @@ $db = new DB();
                                     }
                                     
                                     if (isSys) {
-                                        moverEle.setAttribute('cx', myX);
-                                        moverEle.setAttribute('cy', myY);
+                                        moverEle.setAttribute('x', myX);
+                                        moverEle.setAttribute('y', myY);
                                     }
                                     else {
-                                        moverEle.setAttribute('cx', drop.x + drop.width / 2);
-                                        moverEle.setAttribute('cy', drop.y + drop.height/ 2);
+                                        moverEle.setAttribute('x', drop.x + drop.width / 2 - 30);
+                                        moverEle.setAttribute('y', drop.y + drop.height/ 2 - 5);
                                     }
                                 }
                             }
@@ -173,40 +186,15 @@ $db = new DB();
                 }
             }
 
-            function setMove( id ) {
-                moverId = id;
-
-                myX = document.getElementById( moverId ).getAttribute( `cx` );
-                myY = document.getElementById( moverId ).getAttribute( `cy` );
-
-                }
-
-            function moveMouse( evt ) {
-                if ( moverId ) {
-
-                    left = document.getElementsByTagName(`svg`)[0].getBoundingClientRect().left;
-                    y =  document.getElementsByTagName(`svg`)[0].getBoundingClientRect().y;
-
-                    // Prevents text selection while dragging elements
-                    evt.preventDefault();
-
-                    const moverEle = document.getElementById( moverId );
-
-                    // actually change the location
-                    moverEle.setAttribute( `cx`, evt.clientX-left );
-                    moverEle.setAttribute( `cy`, evt.clientY-y );
-                }
-            }
-
             function checkHit(x, y) {
 
                 for (let i = 0; i < ROWS; i++) {
                     for (let j = 0; j < COLS; j++) {
-                    const drop = document.getElementById(`target_${i}${j}`).getBBox();
+                        const drop = document.getElementById(`target_${i}${j}`).getBBox();
 
-                    if (x > drop.x && x < (drop.x + drop.width) && y > drop.y && y < (drop.x + drop.height)) {
-                        return true
-                    }
+                        if (x > drop.x && x < (drop.x + drop.width) && y > drop.y && y < (drop.x + drop.height)) {
+                            return true
+                        }
                     }
                 }
             }
