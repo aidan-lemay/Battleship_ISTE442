@@ -57,10 +57,6 @@ const chatSchema = new mongoose.Schema({
 }, {collection: "chatData"});
 
 const userSchema = new mongoose.Schema({
-    uid: {
-        required: true,
-        type: Number
-    },
     fName: {
         required: true,
         type: String
@@ -71,6 +67,10 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         required: true,
+        type: String
+    },
+    token: {
+        required: false,
         type: String
     },
     hPass: {
