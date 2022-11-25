@@ -1,12 +1,12 @@
 <?php
-session_start();
-if (!isset($_SESSION['name'])) {
-    header("location: signUp.php");
-}
-$name = $_SESSION['name'];
-$uid = $_SESSION['uid'];
-include_once('./assets/db/db.class.php');
-$db = new DB();
+    session_start();
+    if (!isset($_SESSION['name'])) {
+        header("location: signUp.php");
+    }
+    $name = $_SESSION['name'];
+    $uid = $_SESSION['uid'];
+    include_once('./assets/db/db.class.php');
+    $db = new DB();
 ?>
 <!DOCTYPE html>
 <html>
@@ -38,6 +38,8 @@ $db = new DB();
             const ROWS = 11,
                   COLS = 11;
             sysTiles = [];
+            shipLoc =[];
+            isSelected = "";
             let player = "Aidan",
                 moverId,    //keeps track of what I'm dragging
                 myX,
@@ -54,6 +56,7 @@ $db = new DB();
 
             function drawBoard() {
                 let board = ``,
+                    tboard = ``,
                     x,
                     y,
                     color,
@@ -67,12 +70,15 @@ $db = new DB();
                 numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
                 iCnt = 0;
                 jCnt = 0;
+                tiCnt = 0;
+                tjCnt = 0;
                 offX = 25;
                 offY = 45;
 
+                // My Board
                 for ( let i = 0; i < ROWS; i++ ) {
                     for ( let j = 0; j < COLS; j++ ) {
-                        x = 70 * i + 550;
+                        x = 70 * i + 350;
                         y = 70 * j + 0;
 
                         if (i == 0 && j == 0) {
@@ -104,6 +110,41 @@ $db = new DB();
                     
                 }
 
+                // Their Board
+                for ( let i = 0; i < ROWS; i++ ) {
+                    for ( let j = 0; j < COLS; j++ ) {
+                        x = 70 * i + 350;
+                        y = 70 * j + 0;
+
+                        if (i == 0 && j == 0) {
+                            tboard += `<rect x="${x}" y="${y}" width="${w}" height="${w}" stroke-width="2" stroke="black" fill="black" id="theirtarget_${i}${j}"></rect>`;
+                        }
+                        else {
+                            tboard += `<rect x="${x}" y="${y}" width="${w}" height="${w}" stroke-width="2" stroke="black" fill="white" id="theirtarget_${i}${j}" onmousedown='setSelect("theirtarget_${i}${j}")' ></rect>`;
+                        }
+
+                        
+                        
+                        if (i == 0 || j == 0) {
+                            if (i == 0) {
+                                if (j != 0) {
+                                    tboard += `<text x="${x+offX}" y="${y+offY}" font-size="20pt">${letters[tiCnt]}</text>`;
+                                    tiCnt ++;
+                                }
+                            }
+                            if (j == 0) {
+                                if (i != 0) {
+                                    tboard += `<text x="${x+offX}" y="${y+offY}" font-size="20pt">${numbers[tjCnt]}</text>`;
+                                    tjCnt ++;
+                                }
+                            }
+                            sysTiles.push(`theirtarget_${i}${j}`);
+                        }
+                
+                    }
+                    
+                }
+
                 // create ships
 
                 const sX = 10;
@@ -116,6 +157,26 @@ $db = new DB();
                 board += `<image x='${sX}' y='${sY + 85}' width="${w - 10}" id="Submarine" href="./assets/img/ships/submarine.min.svg" class="ships" onmousedown='setMove( "Submarine" );' />`;
 
                 document.getElementById( `board` ).innerHTML = board;
+                document.getElementById( `theirboard` ).innerHTML = tboard;
+            }
+
+            function setSelect(id) {
+                found = false;
+
+                for (x in sysTiles) {
+                    if (sysTiles[x] == id) {
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    if (isSelected.length > 0) {
+                        $(`#${isSelected}`).css({ fill: "white" });
+                    }
+                    
+                    $(`#${id}`).css({ fill: "yellow" });
+                    isSelected = id;
+                }
             }
 
             function setMove( id ) {
@@ -176,6 +237,7 @@ $db = new DB();
                                     else {
                                         moverEle.setAttribute('x', drop.x + drop.width / 2 - 30);
                                         moverEle.setAttribute('y', drop.y + drop.height/ 2 - 5);
+                                        shipLoc.push([moverId, `target_${i}${j}`]);
                                     }
                                 }
                             }
@@ -198,11 +260,49 @@ $db = new DB();
                     }
                 }
             }
+
+            function submitBoard() {
+                document.getElementById('myShips');
+            }
         </script>
         
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="2000px" height="1000px" onload="init();">
-            <g id="board"></g>
-        </svg>
+        <div>
+            <h1>My Ships</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" id='myShips' version="1.1" width="1500px" height="800px" onload="init();">
+                <g id="board"></g>
+            </svg>
+        </div>
+
+        <div class="submitBoard">
+            <a class="submitBoard" href="">SUBMIT SHIPS</a>
+        </div>
+
+        <?php
+            if (!isset($_SESSION['submittedBoard'])) {
+                echo    `<div class="submitBoard">
+                            <a class="submitBoard" href="">SUBMIT SHIPS</a>
+                        </div>`;
+            }
+        ?>
+        
+        <div>
+            <h1>Opponents Ships</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" id="theirShips" version="1.1" width="1500px" height="800px" onload="init();">
+                <g id="theirboard"></g>
+            </svg>
+        </div>
+
+        <div class="submitBoard">
+            <a class="submitBoard" href="">SUBMIT YOUR TURN</a>
+        </div>
+        
+        <?php
+            if (isset($_SESSION['submittedBoard'])) {
+                echo    `<div class="submitBoard">
+                            <a class="submitBoard" href="">SUBMIT YOUR TURN</a>
+                        </div>`;
+            }
+        ?>
 
     </div>
 </body>

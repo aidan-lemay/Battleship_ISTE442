@@ -1,3 +1,5 @@
 *.code-workspace
 */vendor
 secrets.php
+*/node_modules
+Server/.env

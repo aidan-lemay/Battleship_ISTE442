@@ -19,6 +19,7 @@ if (isset($_SESSION['name'])) {
 if (isset($submit)) {
     if (!empty($_POST['email']) && !empty($_POST['pwd'])) {
         $pwd = $db -> signIn($_POST['email']);
+        
         if (!$pwd) {
             $error = "Email Not Found In Our Database";
         }
