@@ -20,8 +20,13 @@
 
 ## ToDo List
 [] Game needs to be able to submit boards
+
 [] Chat needs to be added to game page
+
 [] Users need to be able to request to start games with other users
+
 [] ERROR HANDLING!
+
 [] Make sure XSS / SQL Injection isn't easy
+
 [] Store chat messages in database
