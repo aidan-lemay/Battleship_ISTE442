@@ -5,6 +5,7 @@
     }
     $name = $_SESSION['name'];
     $uid = $_SESSION['uid'];
+    $token = $_SESSION['token'];
     include_once('./assets/db/db.class.php');
     $db = new DB();
 ?>
@@ -34,13 +35,15 @@
 
         <script>
             var conn = new WebSocket('ws://localhost:8080');
+            const user1ID = <?php echo $uid ?>;
+            const token = <?php echo $token ?>;
 
             const ROWS = 11,
                   COLS = 11;
             sysTiles = [];
             shipLoc =[];
             isSelected = "";
-            let player = "Aidan",
+            let player = <?php echo $name ?>,
                 moverId,    //keeps track of what I'm dragging
                 myX,
                 myY;
@@ -262,7 +265,24 @@
             }
 
             function submitBoard() {
-                document.getElementById('myShips');
+                const myBoard = document.getElementById('myShips');
+                const myBody = {
+                    "gameID": "",
+                    "user1ID": user1ID,
+                    "user1Board": myBoard
+                };
+
+                const userAction = async () => {
+                const response = await fetch('localhost:3000/submitBoard', {
+                    method: 'POST',
+                    body: myBody, // string or object
+                    headers: {
+                    'Content-Type': 'application/json'
+                    }
+                });
+                const myJson = await response.json(); //extract JSON from the http response
+                // do something with myJson
+                }
             }
         </script>
         
@@ -274,7 +294,7 @@
         </div>
 
         <div class="submitBoard">
-            <a class="submitBoard" href="">SUBMIT SHIPS</a>
+            <button class="submitBoard" onclick="submitBoard()">SUBMIT SHIPS</button>
         </div>
 
         <?php

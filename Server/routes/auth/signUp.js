@@ -4,9 +4,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Users } = require('../../db/model');
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
 
     try {
+        console.log(req.body);
         // Get user input
         const { fName, lName, email, hPass } = req.body;
 
@@ -48,7 +49,9 @@ router.get('/', async (req, res) => {
                 // return new user
                 res.status(201).json({
                     "_id": user._id,
-                    "token": user.token
+                    "token": user.token,
+                    "fName": user.fName,
+                    "lName": user.lName
                 });
             }
         }

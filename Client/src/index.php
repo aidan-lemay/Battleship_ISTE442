@@ -5,6 +5,7 @@ if (!isset($_SESSION['name'])) {
 }
 $name = $_SESSION['name'];
 $uid = $_SESSION['uid'];
+
 include_once('./assets/db/db.class.php');
 $db = new DB();
 ?>

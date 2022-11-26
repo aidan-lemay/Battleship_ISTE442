@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Users } = require('../../db/model');
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         // Get user input
         const { email, hPass } = req.body;
@@ -33,7 +33,9 @@ router.get('/', async (req, res) => {
                 // user
                 res.status(200).json({
                     "_id": user._id,
-                    "token": user.token
+                    "token": user.token,
+                    "fName": user.fName,
+                    "lName": user.lName
                 });
             }
             else {

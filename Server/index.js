@@ -22,18 +22,17 @@ db.once('connected', () => {
 })
 
 // Route Definitions
-// const auth = require('./auth');
+const auth = require('./routes/auth/auth');
 const signIn = require('./routes/auth/signIn');
 const signUp = require('./routes/auth/signUp');
 const submitBoard = require('./routes/submitBoard');
 const highestID = require('./routes/highestID');
 
 // Methods
-// app.use('/submitBoard', auth, submitBoard);
 app.use('/signIn', signIn);
 app.use('/signUp', signUp);
-app.use('/submitBoard', submitBoard);
-app.use('/highestID', highestID);
+app.use('/submitBoard', auth, submitBoard);
+app.use('/highestID', auth, highestID);
 
 app.listen(3000, () => {
     console.log(`Server Started at ${3000}`)

@@ -6,6 +6,7 @@ require_once("./assets/db/db.class.php");
 $db = new DB();
 
 $error = "";
+$url = "localhost:3000/signUp";
 
 include_once("./assets/secrets.php");
 
@@ -16,24 +17,33 @@ if (isset($_SESSION['name'])) {
 }
 
 if (isset($submit)) {
-    if (!empty($_POST['fname']) && !empty($_POST['lname']) && !empty($_POST['email']) && !empty($_POST['pwd'])) {
+    if (!empty($_POST['fName']) && !empty($_POST['lName']) && !empty($_POST['email']) && !empty($_POST['pwd'])) {
 
-        // $pwd = filter_var($_POST['pwd'], FILTER_SANITIZE_STRING);
-        // $fname = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
-        // $lname = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
-        // $email = filter_var($_POST['email'], FILTER_SANITIZE_STRING);
+        if (strpos($_POST['email'], "@") !== false && strpos($_POST['email'], ".") !== false){
+            $ch = curl_init( $url );
+            # Setup request to send json via POST.
+            $payload = json_encode( array( 'fName' => $_POST['fName'], 'lName' => $_POST['lName'], 'email' => $_POST['email'], 'hPass' => $_POST['pwd'] ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            # Return response instead of printing.
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            # Send request.
+            $result = curl_exec($ch);
+            curl_close($ch);
 
-        $name = $fname . " " . $lname;
+            if ($result == "Users Already Exist. Please Login") {
+                $error = $result;
+            }
+            else {
+                $result = json_decode($result, true);
 
-        $hpwd = password_hash($_POST['pwd'], PASSWORD_BCRYPT);
-        $uid = $db -> createUser($_POST['fname'], $_POST['lname'], $_POST['email'], $hpwd);
-        if (!$uid) {
-            $error = "You Have Already Been Signed Up";
-        }
-        else {
-            $_SESSION['name'] = $name;
-            $_SESSION['uid'] = $uid;
-            header("location: index.php");
+                $_SESSION['token'] = $result['token'];
+                $_SESSION['name'] = "{$result['fName']} {$result['lName']}";
+                $_SESSION['uid'] = $result['_id'];
+                header("location: index.php");
+            }
+        } else{
+            $error = "Email Must Contain both an @ and a .";
         }
 
     } else {
@@ -54,8 +64,8 @@ if (isset($submit)) {
     <div id="nameBox">
         <h2>Welcome! Please type your name below to begin chatting.</h2>
         <form method="post" action="">
-            <input class="inputT" type="text" name="fname" placeholder="First Name" />
-            <input class="inputT" type="text" name="lname" placeholder="Last Name" />
+            <input class="inputT" type="text" name="fName" placeholder="First Name" />
+            <input class="inputT" type="text" name="lName" placeholder="Last Name" />
             <br />
             <input class="inputT" type="text" name="email" placeholder="Email" />
             <input class="inputT" type="password" name="pwd" placeholder="Password" />
@@ -65,6 +75,7 @@ if (isset($submit)) {
         <div id="signIn" class="signIn">
             <a href="signIn.php" class="inputI">Sign In with Existing Account Instead!</a>
         </div>
+        <br /><br />
         <div id="error" class="error"><?php echo $error ?></div>
     </div>
 </body>

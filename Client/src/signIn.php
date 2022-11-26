@@ -6,6 +6,7 @@ require_once("./assets/db/db.class.php");
 $db = new DB();
 
 $error = "";
+$url = "localhost:3000/signIn";
 
 include_once("./assets/secrets.php");
 
@@ -18,21 +19,34 @@ if (isset($_SESSION['name'])) {
 
 if (isset($submit)) {
     if (!empty($_POST['email']) && !empty($_POST['pwd'])) {
-        $pwd = $db -> signIn($_POST['email']);
-        
-        if (!$pwd) {
-            $error = "Email Not Found In Our Database";
-        }
-        else {
 
-            if (password_verify($_POST['pwd'], $pwd[0][0])) {
-                $_SESSION['name'] = $pwd[0][1] . " " . $pwd[0][2];
-                $_SESSION['uid'] = $uid;
-                header("location: index.php");
+        if (strpos($_POST['email'], "@") !== false && strpos($_POST['email'], ".") !== false){
+            $ch = curl_init( $url );
+            # Setup request to send json via POST.
+            $payload = json_encode( array( 'email' => $_POST['email'], 'hPass' => $_POST['pwd'] ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            # Return response instead of printing.
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            # Send request.
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            if ($result == "Invalid Credentials") {
+                echo "true";
+                $error = "$result";
             }
             else {
-                $error = "Incorrect Password";
+                $result = json_decode($result, true);
+
+                $_SESSION['token'] = $result['token'];
+                $_SESSION['name'] = "{$result['fName']} {$result['lName']}";
+                $_SESSION['uid'] = $result['_id'];
+                header("location: index.php");
             }
+        }
+        else {
+            $error = "Email Must Contain both an @ and a .";
         }
 
     } else {
@@ -61,6 +75,7 @@ if (isset($submit)) {
         <div id="signIn" class="signIn">
             <a href="signUp.php" class="inputI">Sign Up with New Account Instead!</a>
         </div>
+        <br /><br />
         <div id="error" class="error"><?php echo $error ?></div>
     </div>
 </body>

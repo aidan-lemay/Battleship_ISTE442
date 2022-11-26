@@ -10,23 +10,40 @@ function getTimeStamp(date) {
 router.post('/', async (req, res) => {
 
     const result = await GameBoards.findOne({gameID: req.body.gameID}, {gameID: 1});
-
     if (result.gameID > 0) {
-        // Update Game Board Since ID Exist
-        const updatedData = {
-            user1Board: req.body.user1Board,
-            user2Board: req.body.user2Board,
-            timeStamp: Date.now()
-        }
 
-        GameBoards.updateOne({ "_id": result._id }, updatedData, function (err, result) {
-            if (err !== null) {
-                res.status(500).json(err);
+        if (req.body.user1ID != null) {
+            // Update Game Board 1 Since ID Exist
+            const updatedData = {
+                user1Board: req.body.user1Board,
+                timeStamp: Date.now()
             }
-            else {
-                res.status(200).json({ "gameID": result.gameID, "updatedAt": getTimeStamp(Date.now()) });
+
+            GameBoards.updateOne({ "_id": result._id }, updatedData, function (err, result) {
+                if (err !== null) {
+                    res.status(500).json(err);
+                }
+                else {
+                    res.status(200).json({ "gameID": result.gameID, "updatedAt": getTimeStamp(Date.now()) });
+                }
+            });
+        }
+        else if (req.body.user2ID != null) {
+            // Update Game Board 2 Since ID Exist
+            const updatedData = {
+                user2Board: req.body.user2Board,
+                timeStamp: Date.now()
             }
-        });
+
+            GameBoards.updateOne({ "_id": result._id }, updatedData, function (err, result) {
+                if (err !== null) {
+                    res.status(500).json(err);
+                }
+                else {
+                    res.status(200).json({ "gameID": result.gameID, "updatedAt": getTimeStamp(Date.now()) });
+                }
+            });
+        }
     }
     else {
         // Create New Game Board Since ID Not Exist
@@ -47,7 +64,7 @@ router.post('/', async (req, res) => {
         catch (error) {
             res.status(400).json({message: error.message})
         }
-    }
+    }   
 
 });
 
