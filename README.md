@@ -25,3 +25,4 @@
 - [ ] ERROR HANDLING!
 - [ ] Make sure XSS / SQL Injection isn't easy
 - [ ] Store chat messages in database
+- [ ] User table should have T/F "InGame" flag, tells UI to check for existing games 
