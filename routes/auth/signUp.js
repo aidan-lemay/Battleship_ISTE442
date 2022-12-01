@@ -4,10 +4,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Users } = require('../../db/model');
 
+// GET Login for rendering HTML page in DOM
+router.get('/', async (req, res) => {
+    res.sendFile(__dirname + "/pageAssets/signUp.html");
+});
+
 router.post('/', async (req, res) => {
 
     try {
-        console.log(req.body);
         // Get user input
         const { fName, lName, email, hPass } = req.body;
 
@@ -32,7 +36,7 @@ router.post('/', async (req, res) => {
                     fName,
                     lName,
                     email: email.toLowerCase(), // sanitize: convert email to lowercase
-                    hPass: encryptedPassword,
+                    hPass: encryptedPassword
                 });
 
                 // Create token
@@ -43,16 +47,19 @@ router.post('/', async (req, res) => {
                         expiresIn: "2h",
                     }
                 );
-                // save user token
-                user.token = token;
+
+                // Update token in DB
+                await Users.updateOne({"_id": user._id}, {$set: {token: token}})
 
                 // return new user
-                res.status(201).json({
-                    "_id": user._id,
-                    "token": user.token,
-                    "fName": user.fName,
-                    "lName": user.lName
-                });
+                // res.status(201).json({
+                //     "_id": user._id,
+                //     "token": user.token,
+                //     "fName": user.fName,
+                //     "lName": user.lName
+                // });
+                res.writeHead(301, { "set-cookie": "token=" + token, "Location": '/chat' });
+                return res.end();
             }
         }
     } catch (err) {

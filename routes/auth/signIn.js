@@ -4,6 +4,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Users } = require('../../db/model');
 
+// GET Login for rendering HTML page in DOM
+router.get('/', async (req, res) => {
+    res.sendFile(__dirname + "/pageAssets/signIn.html");
+});
+
+// POST Login for generating and validating token and authentication data
 router.post('/', async (req, res) => {
     try {
         // Get user input
@@ -27,19 +33,21 @@ router.post('/', async (req, res) => {
                     }
                 );
 
-                // save user token
-                user.token = token;
+                // Update token in DB
+                await Users.updateOne({"_id": user._id}, {$set: {token: token}});
 
                 // user
-                res.status(200).json({
-                    "_id": user._id,
-                    "token": user.token,
-                    "fName": user.fName,
-                    "lName": user.lName
-                });
+                // res.status(200).json({
+                //     "_id": user._id,
+                //     "token": user.token,
+                //     "fName": user.fName,
+                //     "lName": user.lName
+                // });
+                res.writeHead(301, { "set-cookie": "token=" + token, "Location": '/chat' });
+                return res.end();
             }
             else {
-                res.status(400).send("Invalid Credentials");
+                res.status(401).send("Invalid Credentials");
             }
 
         }
