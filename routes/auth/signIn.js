@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
                 //     "fName": user.fName,
                 //     "lName": user.lName
                 // });
-                res.writeHead(301, { "set-cookie": "token=" + token, "Location": '/chat' });
+                res.writeHead(301, { "set-cookie": ["token=" + token, "name=" + user.fName + " " + user.lName],  "Location": '/chat' });
                 return res.end();
             }
             else {

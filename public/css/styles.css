@@ -118,3 +118,7 @@ input[type=reset] {
 th, td {
     padding: 10px;
 }
+.status {
+    font-size: x-large;
+    color: white;
+}

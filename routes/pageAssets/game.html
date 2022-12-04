@@ -251,27 +251,6 @@
                     }
                 }
             }
-
-            function submitBoard() {
-                const myBoard = document.getElementById('myShips');
-                const myBody = {
-                    "gameID": "",
-                    "user1ID": user1ID,
-                    "user1Board": myBoard
-                };
-
-                const userAction = async () => {
-                const response = await fetch('localhost:3000/submitBoard', {
-                    method: 'POST',
-                    body: myBody, // string or object
-                    headers: {
-                    'Content-Type': 'application/json'
-                    }
-                });
-                const myJson = await response.json(); //extract JSON from the http response
-                // do something with myJson
-                }
-            }
         </script>
         
         <div>
@@ -282,7 +261,7 @@
         </div>
 
         <div class="submitBoard">
-            <button class="submitBoard" onclick="submitBoard()">SUBMIT SHIPS</button>
+            <a class="submitBoard" onclick="submitBoard()">SUBMIT SHIPS</a>
         </div>
 
         <!-- <?php
@@ -318,6 +297,28 @@
 <script>
     function getLobby() {
         location.href = '/chat';
+    }
+
+    function submitBoard() {
+        console.log("submit");
+        const myBoard = document.getElementById('myShips');
+        const myBody = {
+            "gameID": "",
+            "user1ID": user1ID,
+            "user1Board": myBoard
+        };
+
+        const userAction = async () => {
+        const response = await fetch('localhost:3000/submitBoard', {
+            method: 'POST',
+            body: myBody, // string or object
+            headers: {
+            'Content-Type': 'application/json'
+            }
+        });
+        const myJson = await response.json(); //extract JSON from the http response
+        // do something with myJson
+        }
     }
 
 </script>

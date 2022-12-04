@@ -54,8 +54,8 @@ wsServer.on('request', function (request) {
         connection.sendUTF(JSON.stringify({ type: 'history', data: history }));
     }  // user sent some message
     connection.on('message', function (message) {
-        if (message.type === 'utf8') { // accept only text
-            // first message sent by user is their name
+            let msg = JSON.parse(message);
+            console.log(msg);
 
             console.log((new Date()) + ' Received Message from ' + userName + ': ' + message.utf8Data);
 
@@ -71,7 +71,7 @@ wsServer.on('request', function (request) {
             for (let i = 0; i < clients.length; i++) {
                 clients[i].sendUTF(json);
             }
-    }})
+    })
     connection.on('close', function (connection) {
         if (userName !== false && userColor !== false) {
             console.log((new Date()) + " Peer " + connection.remoteAddress + " disconnected.");      // remove user from the list of connected clients

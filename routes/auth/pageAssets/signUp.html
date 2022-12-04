@@ -87,6 +87,10 @@
                     // const id = response._id;
                     // const token = response.token;
                     // const name = `${response.fName} ${response.lName}`;
+                    location.href = '/chat';
+                }
+                else if (response.status == 200) {
+                    location.href = '/chat';
                 }
                 else {
                     errorOutput.innerText = "An Error Occurred, Please Try Again";
