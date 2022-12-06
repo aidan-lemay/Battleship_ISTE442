@@ -40,7 +40,7 @@ let wsServer = new webSocketServer({
 });// This callback function is called every time someone
 // tries to connect to the WebSocket server
 wsServer.on('request', function (request) {
-    console.log((new Date()) + ' Connection from origin ' + request.origin + '.');  // accept connection - you should check 'request.origin' to
+    // console.log((new Date()) + ' Connection from origin ' + request.origin + '.');  // accept connection - you should check 'request.origin' to
     // make sure that client is connecting from your website
     // (http://en.wikipedia.org/wiki/Same_origin_policy)
     let connection = request.accept(null, request.origin);
@@ -48,30 +48,28 @@ wsServer.on('request', function (request) {
     let index = clients.push(connection) - 1;
     let userName = false;
     let userColor = false;
-    console.log((new Date()) + ' Connection accepted.'); 
+    console.log((new Date()) + ' New Connection Accepted.');
     // send back chat history
     if (history.length > 0) {
         connection.sendUTF(JSON.stringify({ type: 'history', data: history }));
     }  // user sent some message
     connection.on('message', function (message) {
-            let msg = JSON.parse(message);
-            console.log(msg);
+            // ENCODE MESSAGE BEFORE LOGGING OR SENDING
+            let msgPrs = JSON.parse(message.utf8Data);
 
-            console.log((new Date()) + ' Received Message from ' + userName + ': ' + message.utf8Data);
+            console.log((new Date()) + ' Received Message from ' + msgPrs.name + ': ' + msgPrs.msg);
 
-            // we want to keep history of all sent messages
+            // Log sent message to DB via endpoint
             let obj = {
                 time: (new Date()).getTime(),
-                text: htmlEntities(message.utf8Data),
-                author: userName,
+                text: htmlEntities(msgPrs.msg),
+                author: msgPrs.name,
             };
-            history.push(obj);
-            history = history.slice(-100);        // broadcast message to all connected clients
             let json = JSON.stringify({ type: 'message', data: obj });
             for (let i = 0; i < clients.length; i++) {
                 clients[i].sendUTF(json);
             }
-    })
+    });
     connection.on('close', function (connection) {
         if (userName !== false && userColor !== false) {
             console.log((new Date()) + " Peer " + connection.remoteAddress + " disconnected.");      // remove user from the list of connected clients

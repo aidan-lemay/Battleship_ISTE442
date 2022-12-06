@@ -45,6 +45,7 @@ const chat = require('./routes/chat');
 const game = require('./routes/game');
 
 const signOut = require('./routes/signOut');
+const newMessage = require('./routes/newMessage');
 const submitBoard = require('./routes/submitBoard');
 const highestID = require('./routes/highestID');
 
@@ -54,14 +55,15 @@ app.use('/', defaultRoute);
 // Page Endpoints
 app.use('/signIn', signIn);
 app.use('/signUp', signUp);
+app.use('/signOut', auth, signOut);
 
 app.use('/chat', auth, chat);
 app.use('/game', auth, game);
 
 // Logical Endpoints
+app.use('/newMessage', auth, newMessage);
 app.use('/submitBoard', auth, submitBoard);
 app.use('/highestID', auth, highestID);
-app.use('/signOut', auth, signOut);
 
 app.listen(3000, () => {
     console.log(`Server Started at ${3000}`)

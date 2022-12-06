@@ -3,7 +3,8 @@
 
 <head>
     <title>Battleship</title>
-    <link rel="stylesheet" href="./css/gameStyles.css"></link>
+    <link rel="stylesheet" href="./css/gameStyles.css">
+    </link>
 </head>
 
 <body>
@@ -15,33 +16,35 @@
             <div class="gameStart">
                 <a class="gameStart" onclick="getLobby()">RETURN TO LOBBY</a>
             </div>
-            
+
             <div class="logOut">
                 <a class="logOut" onclick="signOut()">LOGOUT</a>
             </div>
         </div>
 
         <script>
-            // var conn = new WebSocket('ws://localhost:8080');
-            // const user1ID = <?php echo $uid ?>;
-            // const token = <?php echo $token ?>;
-
             const ROWS = 11,
-                  COLS = 11;
+                COLS = 11;
             sysTiles = [];
-            shipLoc =[];
+            shipLoc = {
+                'Battleship': '',
+                'Carrier': '',
+                'Cruiser': '',
+                'Destroyer': '',
+                'Submarine': ''
+            };
             isSelected = "";
             let player = "",
                 moverId,    //keeps track of what I'm dragging
                 myX,
                 myY;
 
-            function init( evt ) {
+            function init(evt) {
                 drawBoard();
 
-                document.getElementsByTagName( `svg` )[0].addEventListener( `mousemove`, moveMouse );
+                document.getElementsByTagName(`svg`)[0].addEventListener(`mousemove`, moveMouse);
 
-                document.getElementsByTagName( `svg` )[0].addEventListener( `mouseup`, releaseMouse );
+                document.getElementsByTagName(`svg`)[0].addEventListener(`mouseup`, releaseMouse);
 
             }
 
@@ -67,8 +70,8 @@
                 offY = 45;
 
                 // My Board
-                for ( let i = 0; i < ROWS; i++ ) {
-                    for ( let j = 0; j < COLS; j++ ) {
+                for (let i = 0; i < ROWS; i++) {
+                    for (let j = 0; j < COLS; j++) {
                         x = 70 * i + 350;
                         y = 70 * j + 0;
 
@@ -79,31 +82,31 @@
                             board += `<rect x="${x}" y="${y}" width="${w}" height="${w}" stroke-width="2" stroke="black" fill="white" id="target_${i}${j}"></rect>`;
                         }
 
-                        
-                        
+
+
                         if (i == 0 || j == 0) {
                             if (i == 0) {
                                 if (j != 0) {
-                                    board += `<text x="${x+offX}" y="${y+offY}" font-size="20pt">${letters[iCnt]}</text>`;
-                                    iCnt ++;
+                                    board += `<text x="${x + offX}" y="${y + offY}" font-size="20pt">${letters[iCnt]}</text>`;
+                                    iCnt++;
                                 }
                             }
                             if (j == 0) {
                                 if (i != 0) {
-                                    board += `<text x="${x+offX}" y="${y+offY}" font-size="20pt">${numbers[jCnt]}</text>`;
-                                    jCnt ++;
+                                    board += `<text x="${x + offX}" y="${y + offY}" font-size="20pt">${numbers[jCnt]}</text>`;
+                                    jCnt++;
                                 }
                             }
                             sysTiles.push(`target_${i}${j}`);
                         }
-                
+
                     }
-                    
+
                 }
 
                 // Their Board
-                for ( let i = 0; i < ROWS; i++ ) {
-                    for ( let j = 0; j < COLS; j++ ) {
+                for (let i = 0; i < ROWS; i++) {
+                    for (let j = 0; j < COLS; j++) {
                         x = 70 * i + 350;
                         y = 70 * j + 0;
 
@@ -114,26 +117,26 @@
                             tboard += `<rect x="${x}" y="${y}" width="${w}" height="${w}" stroke-width="2" stroke="black" fill="white" id="theirtarget_${i}${j}" onmousedown='setSelect("theirtarget_${i}${j}")' ></rect>`;
                         }
 
-                        
-                        
+
+
                         if (i == 0 || j == 0) {
                             if (i == 0) {
                                 if (j != 0) {
-                                    tboard += `<text x="${x+offX}" y="${y+offY}" font-size="20pt">${letters[tiCnt]}</text>`;
-                                    tiCnt ++;
+                                    tboard += `<text x="${x + offX}" y="${y + offY}" font-size="20pt">${letters[tiCnt]}</text>`;
+                                    tiCnt++;
                                 }
                             }
                             if (j == 0) {
                                 if (i != 0) {
-                                    tboard += `<text x="${x+offX}" y="${y+offY}" font-size="20pt">${numbers[tjCnt]}</text>`;
-                                    tjCnt ++;
+                                    tboard += `<text x="${x + offX}" y="${y + offY}" font-size="20pt">${numbers[tjCnt]}</text>`;
+                                    tjCnt++;
                                 }
                             }
                             sysTiles.push(`theirtarget_${i}${j}`);
                         }
-                
+
                     }
-                    
+
                 }
 
                 // create ships
@@ -147,8 +150,8 @@
                 board += `<image x='${sX}' y='${sY + 65}' width="${w - 10}" id="Destroyer" href="./img/ships/destroyer.min.svg" class="ships" onmousedown='setMove( "Destroyer" );' />`;
                 board += `<image x='${sX}' y='${sY + 85}' width="${w - 10}" id="Submarine" href="./img/ships/submarine.min.svg" class="ships" onmousedown='setMove( "Submarine" );' />`;
 
-                document.getElementById( `board` ).innerHTML = board;
-                document.getElementById( `theirboard` ).innerHTML = tboard;
+                document.getElementById(`board`).innerHTML = board;
+                document.getElementById(`theirboard`).innerHTML = tboard;
             }
 
             function setSelect(id) {
@@ -164,38 +167,38 @@
                     if (isSelected.length > 0) {
                         $(`#${isSelected}`).css({ fill: "white" });
                     }
-                    
+
                     $(`#${id}`).css({ fill: "yellow" });
                     isSelected = id;
                 }
             }
 
-            function setMove( id ) {
+            function setMove(id) {
                 moverId = id;
 
-                myX = document.getElementById( moverId ).getAttribute( `x` );
-                myY = document.getElementById( moverId ).getAttribute( `y` );
+                myX = document.getElementById(moverId).getAttribute(`x`);
+                myY = document.getElementById(moverId).getAttribute(`y`);
             }
 
-            function moveMouse( evt ) {
-                if ( moverId ) {
+            function moveMouse(evt) {
+                if (moverId) {
 
                     left = document.getElementsByTagName(`svg`)[0].getBoundingClientRect().left;
-                    y =  document.getElementsByTagName(`svg`)[0].getBoundingClientRect().y;
+                    y = document.getElementsByTagName(`svg`)[0].getBoundingClientRect().y;
 
                     // Prevents text selection while dragging elements
                     evt.preventDefault();
 
-                    const moverEle = document.getElementById( moverId );
+                    const moverEle = document.getElementById(moverId);
 
                     // actually change the location
-                    moverEle.setAttribute( `x`, evt.clientX-left );
-                    moverEle.setAttribute( `y`, evt.clientY-y );
+                    moverEle.setAttribute(`x`, evt.clientX - left);
+                    moverEle.setAttribute(`y`, evt.clientY - y);
                 }
             }
 
             function releaseMouse() {
-                if ( moverId ) {
+                if (moverId) {
                     let curX = document.getElementById(moverId).getAttribute('x');
                     let curY = document.getElementById(moverId).getAttribute('y');
                     let hit = checkHit(curX, curY);
@@ -220,15 +223,15 @@
                                             isSys = true;
                                         }
                                     }
-                                    
+
                                     if (isSys) {
                                         moverEle.setAttribute('x', myX);
                                         moverEle.setAttribute('y', myY);
                                     }
                                     else {
                                         moverEle.setAttribute('x', drop.x + drop.width / 2 - 30);
-                                        moverEle.setAttribute('y', drop.y + drop.height/ 2 - 5);
-                                        shipLoc.push([moverId, `target_${i}${j}`]);
+                                        moverEle.setAttribute('y', drop.y + drop.height / 2 - 5);
+                                        shipLoc[moverId] = `target_${i}${j}`;
                                     }
                                 }
                             }
@@ -252,10 +255,11 @@
                 }
             }
         </script>
-        
+
         <div>
             <h1>My Ships</h1>
-            <svg xmlns="http://www.w3.org/2000/svg" id='myShips' version="1.1" width="1500px" height="800px" onload="init();">
+            <svg xmlns="http://www.w3.org/2000/svg" id='myShips' version="1.1" width="1500px" height="800px"
+                onload="init();">
                 <g id="board"></g>
             </svg>
         </div>
@@ -271,10 +275,11 @@
                         </div>`;
             }
         ?> -->
-        
+
         <div>
             <h1>Opponents Ships</h1>
-            <svg xmlns="http://www.w3.org/2000/svg" id="theirShips" version="1.1" width="1500px" height="800px" onload="init();">
+            <svg xmlns="http://www.w3.org/2000/svg" id="theirShips" version="1.1" width="1500px" height="800px"
+                onload="init();">
                 <g id="theirboard"></g>
             </svg>
         </div>
@@ -282,7 +287,7 @@
         <div class="submitBoard">
             <a class="submitBoard" onclick="submitTurn()">SUBMIT YOUR TURN</a>
         </div>
-        
+
         <!-- <?php
             if (isset($_SESSION['submittedBoard'])) {
                 echo    `<div class="submitBoard">
@@ -299,26 +304,27 @@
         location.href = '/chat';
     }
 
-    function submitBoard() {
-        console.log("submit");
+    async function submitBoard() {
+        // Remove Submit Button and Freeze Ship Positions
+        // Make Sure All Ship Positions Present
+        console.log(shipLoc);
         const myBoard = document.getElementById('myShips');
         const myBody = {
-            "gameID": "",
-            "user1ID": user1ID,
-            "user1Board": myBoard
+            "gameID": 126,
+            "userPositions": shipLoc
         };
 
-        const userAction = async () => {
-        const response = await fetch('localhost:3000/submitBoard', {
-            method: 'POST',
-            body: myBody, // string or object
-            headers: {
-            'Content-Type': 'application/json'
-            }
-        });
-        const myJson = await response.json(); //extract JSON from the http response
-        // do something with myJson
-        }
+        (async () => {
+            const response = await fetch('http://localhost:3000/submitBoard', {
+                method: 'PUT',
+                body: JSON.stringify(myBody), // string or object
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const myJson = await response.json(); //extract JSON from the http response
+            // do something with myJson
+        })()
     }
 
 </script>

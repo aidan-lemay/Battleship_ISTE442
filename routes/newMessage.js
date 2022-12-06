@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Users } = require('../db/model');
 
-// GET Login for rendering HTML page in DOM
-router.get('/', async (req, res) => {
-    res.writeHead(302, { "set-cookie": "token=", "Location": '/signIn' });
+// Add Chat Message to DB
+router.post('/', async (req, res) => {
+    
 });
 
 module.exports = router;

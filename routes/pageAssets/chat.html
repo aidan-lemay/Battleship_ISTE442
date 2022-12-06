@@ -22,13 +22,23 @@
             </div>
         </div>
         
+        <div class="chat-zone">
+            <p class="status" id="userName">Logged In As: </p>
 
-        <div class="chatbox" id="chatbox">
-            <div id="messages"></div>
-            <textarea name="msg" id="msgField" class="msgField"></textarea>
+            <div class="chatbox" id="chatbox">
+                <div id="messages"></div>
+                <textarea name="msg" id="msgField" class="msgField"></textarea>
+            </div>
+            <p class="status" id="status"></p>
         </div>
-        <p class="status" id="status"></p>
+        <div class="game-zone">
+            <h3>Users Online:</h3>
+            <hr>
+            <a class="startGame" onclick="startGame()">Start Game With </a>
+        </div>
+
     </div>
+
     <script type="text/javascript">
         function getGame() {
             location.href = '/game';
@@ -42,16 +52,14 @@
                             'Content-Type': 'application/json'
                         }
                     });
-    
-                    console.log(response.status);
-                    
+                        
                     if (response.status == 400) {
                         errorOutput.innerText = "All Inputs Are Required";
                     }
                     else if (response.status == 409) {
                         errorOutput.innerText = "Email Already Exists - Please Log In";
                     }
-                    else if (response.status == 301) {
+                    else if (response.status == 302) {
                         // const id = response._id;
                         // const token = response.token;
                         // const name = `${response.fName} ${response.lName}`;

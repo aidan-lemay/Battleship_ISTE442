@@ -1,23 +1,20 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const boardSchema = new mongoose.Schema({
-    gameID: {
-        required: true,
-        type: Number
-    },
     user1ID: {
         required: true,
-        type: Number
+        type: ObjectId
     },
-    user1Board: {
+    user1Ships: {
         required: true,
         type: String
     },
     user2ID: {
         required: true,
-        type: Number
+        type: ObjectId
     },
-    user2Board: {
+    user2Ships: {
         required: true,
         type: String
     },

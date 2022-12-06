@@ -3,6 +3,7 @@ function startChatClient() {
     let content = document.getElementById('messages');
     let input = document.getElementById('msgField');
     let status = document.getElementById('status');
+    let userName = document.getElementById('userName');
 
     // <p class='fromSystem'><?php echo $name; ?> Has Joined The Chat</p>
     // <p class='fromMe'>Me: ${msgField}</p>
@@ -19,98 +20,101 @@ function startChatClient() {
 
     let name = parseCookie(document.cookie)['name'];
 
+    userName.insertAdjacentText('beforeend', name);
+
     window.WebSocket = window.WebSocket || window.MozWebSocket;  // if browser doesn't support WebSocket, just show
     // some notification and exit
     if (!window.WebSocket) {
         status.innerText = 'Sorry, but your browser doesn\'t support WebSocket.';
-        input.hide();
-        document.getElementById('input').style = "hide";
         return;
     }  // open connection
     let connection = new WebSocket('ws://127.0.0.1:1337'); connection.onopen = function () {
 
-    }; connection.onerror = function (error) {
+    };
+    connection.onerror = function (error) {
         status.innerText = 'Sorry, but there\'s some problem with your connection or the server is down.';
-        connection.onmessage = function (message) {
+    };
+    connection.onmessage = function (message) {
 
-            let json;
-            try {
-                json = JSON.parse(message.data);
-                console.log(json);
-            } catch (e) {
-                console.log('Invalid JSON: ', message.data);
-                return;
-            }    // NOTE: if you're not sure about the JSON structure
-            // check the server source code above
-            if (json.type === 'history') { // entire message history
-                // insert every single message to the chat window
-                for (let i = 0; i < json.data.length; i++) {
-                    if (json.data[i].author == name) {
-                        addMessage(true, json.data[i].author, json.data[i].text, new Date(json.data[i].time));
-                    }
-                    else {
-                        addMessage(false, json.data[i].author, json.data[i].text, new Date(json.data[i].time));
-                    }
-
-                }
-            } else if (json.type === 'message') { // it's a single message
-                // let the user write another message
-                if (json.data.author == name) {
-                    return;
+        let json;
+        try {
+            json = JSON.parse(message.data);
+            console.log(json);
+        } catch (e) {
+            console.log('Invalid JSON: ', message.data);
+            return;
+        }    // NOTE: if you're not sure about the JSON structure
+        // check the server source code above
+        if (json.type === 'history') { // entire message history
+            // insert every single message to the chat window
+            for (let i = 0; i < json.data.length; i++) {
+                if (json.data[i].author == name) {
+                    addMessage(true, json.data[i].author, json.data[i].text, new Date(json.data[i].time));
                 }
                 else {
-                    addMessage(false, json.data.author, json.data.text, new Date(json.data.time));
+                    addMessage(false, json.data[i].author, json.data[i].text, new Date(json.data[i].time));
                 }
 
-            } else {
-                console.log('Hmm..., I\'ve never seen JSON like this:', json);
             }
-        };  /**
+        } else if (json.type === 'message') { // it's a single message
+            // let the user write another message
+            if (json.data.author == name) {
+                return;
+            }
+            else {
+                addMessage(false, json.data.author, json.data.text, new Date(json.data.time));
+            }
+
+        } else {
+            console.log('Hmm..., I\'ve never seen JSON like this:', json);
+        }
+    };
+    /**
      * Send message when user presses Enter key
      */
-        input.onkeydown = (function (e) {
-            if (e.key === 'Enter') {
-                let msg = input.value;
-                if (msg.length == 0) {
+    input.onkeydown = (function (e) {
+        console.log("keydown");
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            let msg = input.value;
+            // Fix Error Handling so Empty Messages Don't Go Through
+            if (msg.length == 0 || msg == "\n") {
+                return;
+            }
+            else {
+                if (!msg) {
                     return;
                 }
-                else {
-                    if (!msg) {
-                        return;
-                    }
-                    // send the message as an ordinary text
-                    let msgContent = {
-                        "name": name,
-                        "date": new Date(),
-                        "msg": msg
-                    };
-                    console.log(msgContent);
-                    connection.send(JSON.stringify(msgContent));
-                    addMessage(true, name, msg, new Date());
-                    input.innerText = "";
-                    input.value = null;
-                }
+                // send the message as an ordinary text
+                let msgContent = {
+                    "name": name,
+                    "date": new Date(),
+                    "msg": msg
+                };
+                connection.send(JSON.stringify(msgContent));
+                addMessage(true, name, msg, new Date());
+                input.innerText = "";
+                input.value = null;
             }
-        });  /**
+        }
+    });  /**
      * This method is optional. If the server wasn't able to
      * respond to the in 3 seconds then show some error message 
      * to notify the user that something is wrong.
      */
-        setInterval(function () {
-            if (connection.readyState !== 1) {
-                status.text = 'Unable to communicate with the WebSocket server.';
-            }
-        }, 3000);  /**
+    setInterval(function () {
+        if (connection.readyState !== 1) {
+            status.text = 'Unable to communicate with the WebSocket server.';
+        }
+    }, 3000);  /**
      * Add message to the chat window
      */
-        function addMessage(fromMe, author, message, dt) {
-            if (fromMe) {
-                console.log('me');
-                content.insertAdjacentHTML('beforeend', (`<p class='fromMe'>${dt} ${author}: ${message}</p>`));
-            }
-            else {
-                content.insertAdjacentHTML('beforeend', (`<p class='fromOther'>${dt} ${author}: ${message}</p>`));
-            }
+    function addMessage(fromMe, author, message, dt) {
+        if (fromMe) {
+            content.insertAdjacentHTML('beforeend', (`<p class='fromMe'>${author}: ${message}</p>`));
+        }
+        else {
+            content.insertAdjacentHTML('beforeend', (`<p class='fromOther'>${author}: ${message}</p>`));
         }
     }
 };

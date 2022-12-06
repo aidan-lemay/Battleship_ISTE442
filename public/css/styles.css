@@ -122,3 +122,6 @@ th, td {
     font-size: x-large;
     color: white;
 }
+.startGame {
+    cursor: pointer;
+}

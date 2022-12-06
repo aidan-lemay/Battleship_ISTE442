@@ -1,15 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const { GameBoards } = require('../db/model');
+const config = process.env;
+const jwt = require("jsonwebtoken");
 
 function getTimeStamp(date) {
     date = new Date(date);
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}T${date.getHours()}:${date.getMinutes()}.${date.getSeconds()}`
 }
 
+// Create New Game
 router.post('/', async (req, res) => {
+    // Make Sure Neither Player Is In Game
+    // Update Player Status to "In Game"
+    // Create Game ID
+    // Assign Player1 and Player2
+});
 
-    const result = await GameBoards.findOne({gameID: req.body.gameID}, {gameID: 1});
+// Update Current Game With Board Positions
+router.put('/', async (req, res) => {
+    // Make Sure Player Is In Game
+    // Get UserID (Token) and GameID (Request)
+    // From UserID, 
+    const decoded = jwt.verify(req.cookies.token, config.JWT_KEY);
+
+    console.log(decoded['user_id']);
+
+    const result = await GameBoards.findOne({ gameID: req.body.gameID }, { gameID: 1 });
     if (result.gameID > 0) {
 
         if (req.body.user1ID != null) {
@@ -55,16 +72,16 @@ router.post('/', async (req, res) => {
             user2Board: req.body.user2Board,
             timeStamp: Date.now()
         });
-    
+
         try {
             const dta = await data.save();
-            const dataToSave = await GameBoards.findOne({"_id": dta._id});
-            res.status(200).json({"id": dataToSave.gameID});
+            const dataToSave = await GameBoards.findOne({ "_id": dta._id });
+            res.status(200).json({ "id": dataToSave.gameID });
         }
         catch (error) {
-            res.status(400).json({message: error.message})
+            res.status(400).json({ message: error.message })
         }
-    }   
+    }
 
 });
 

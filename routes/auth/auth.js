@@ -6,14 +6,15 @@ const verifyToken = (req, res, next) => {
   const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;
 
   if (!token) {
-    res.writeHead(301, { "Location": '/signIn' });
+    res.writeHead(401, { "Location": '/signIn' });
     return res.end();
   }
   try {
     const decoded = jwt.verify(token, config.JWT_KEY);
     req.user = decoded;
   } catch (err) {
-    res.writeHead(301, { "Location": '/signIn' });
+    console.log("Caught Error: " + err);
+    res.writeHead(401, { "Location": '/signIn' });
     return res.end();
   }
   return next();

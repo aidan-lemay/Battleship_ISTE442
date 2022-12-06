@@ -48,7 +48,6 @@
         }
         else {
             (async () => {
-                console.log("async");
                 const response = await fetch('http://localhost:3000/signIn', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -66,7 +65,7 @@
                 else if (response.status == 401) {
                     errorOutput.innerText = "Invalid Credentials";
                 }
-                else if (response.status == 301) {
+                else if (response.status == 302) {
                     // const id = response._id;
                     // const token = response.token;
                     // const name = `${response.fName} ${response.lName}`;

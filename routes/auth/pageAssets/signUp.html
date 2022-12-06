@@ -61,7 +61,6 @@
         }
         else {
             (async () => {
-                console.log("async");
                 const response = await fetch('http://localhost:3000/signUp', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -83,7 +82,7 @@
                 else if (response.status == 409) {
                     errorOutput.innerText = "Email Already Exists - Please Log In";
                 }
-                else if (response.status == 301) {
+                else if (response.status == 302) {
                     // const id = response._id;
                     // const token = response.token;
                     // const name = `${response.fName} ${response.lName}`;

@@ -148,3 +148,4 @@ dist
 secrets.php
 *node_modules
 .env
+routes/.env

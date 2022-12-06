@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { Users } = require('../db/model');
 
 router.get('/', async (req, res) => {
-    res.writeHead(301, { "Location": '/signUp' });
+    res.writeHead(302, { "Location": '/signUp' });
     return res.end();
 });
 
