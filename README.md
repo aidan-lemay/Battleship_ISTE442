@@ -6,7 +6,7 @@
 
 > Using PM2
 * Install PM2 with `npm install -g pm2`
-* Start the API from the root folder with `pm2 start npm --name "Battleship" -- start`
+* Start the API from the root folder with `pm2 start npm --name "Battleship" -- start --watch`
 
 ## Styleguides and information
 > Color Scheme
