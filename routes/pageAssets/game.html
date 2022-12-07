@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Battleship</title>
+    <link rel="stylesheet" href="./css/gameStyles.css">
+    </link>
+</head>
+
+<body>
+    <div class="center-body">
+        <h1>Battleship</h1>
+        <hr />
+
+        <div class="barButtons">
+            <div class="gameStart">
+                <a class="gameStart" onclick="getLobby()">RETURN TO LOBBY</a>
+            </div>
+
+            <div class="logOut">
+                <a class="logOut" onclick="signOut()">LOGOUT</a>
+            </div>
+
+            <div class="leaveGame">
+                <a class="leaveGame" onclick="leaveGame()">FOREFIT</a>
+            </div>
+        </div>
+
+        <script src="./js/gameFunction.js"></script>
+
+        <div>
+            <h1>My Ships</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" id='myShips' version="1.1" width="1500px" height="800px"
+                onload="init();">
+                <g id="board"></g>
+            </svg>
+        </div>
+
+        <div class="submitBoard" id="submitBoardDiv">
+            <a class="submitBoard" onclick="submitBoard()">SUBMIT SHIPS</a>
+        </div>
+
+        <!-- <?php
+            if (!isset($_SESSION['submittedBoard'])) {
+                echo    `<div class="submitBoard">
+                            <a class="submitBoard" href="">SUBMIT SHIPS</a>
+                        </div>`;
+            }
+        ?> -->
+
+        <div>
+            <h1>Opponents Ships</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" id="theirShips" version="1.1" width="1500px" height="800px"
+                onload="init();">
+                <g id="theirboard"></g>
+            </svg>
+        </div>
+
+        <div class="submitBoard" id="submitTurnDiv">
+            <a class="submitBoard" onclick="submitTurn()">SUBMIT YOUR TURN</a>
+        </div>
+
+        <!-- <?php
+            if (isset($_SESSION['submittedBoard'])) {
+                echo    `<div class="submitBoard">
+                            <a class="submitBoard" href="">SUBMIT YOUR TURN</a>
+                        </div>`;
+            }
+        ?> -->
+
+    </div>
+</body>
+
+<script>
+    let submitTurnButton = document.getElementById('submitTurnDiv');
+    let lastUpdate = "";
+
+    // Long Running Process To Check Turns
+    setInterval(async () => {
+        const res = await fetch('http://localhost:3000/checkTurn');
+        const myJson = await res.json();
+
+        if (!myJson['myTurn']) {
+            submitTurnButton.hidden = true;
+        }
+        else {
+            submitTurnButton.hidden = false;
+        }
+
+        if (lastUpdate != myJson['lastUpdate']) {
+            // Force Board Update
+            lastUpdate = myJson['lastUpdate'];
+        }
+
+    }, 1000);
+
+    setInterval(async () => {
+        (async () => {
+            const response = await fetch('http://localhost:3000/getGameDetails', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const myJson = await response.json();
+            if (response.status == 200) {
+                theirMoves = myJson['theirMoves'];
+
+                // Add Their Already Played Buttons
+                for (let key in theirMoves) {
+                    if (key != 'Zero' && theirMoves[key] != 'Zero') {
+                        let cell = document.getElementById(key);
+                        if (theirMoves[key]) {
+                            cell.style.fill = 'green';
+                        }
+                        else {
+                            cell.style.fill = 'red';
+                        }
+                        cell.setAttribute('onmousedown', null);
+                    }
+                    
+                }
+
+                if (myJson['youWin'] != undefined) {
+                    if (myJson['youWin']) {
+                        alert("You Win!");
+                        leaveGame();
+                    }
+                    else if (!myJson['youWin']) {
+                        alert("You Lose!");
+                        leaveGame();
+                    }
+                }
+            }
+        })();
+    }, 1000);
+
+    function getLobby() {
+        location.href = '/chat';
+    }
+
+    async function leaveGame() {
+        (async () => {
+            const response = await fetch('http://localhost:3000/leaveGame', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.status == 200) {
+                location.href = '/chat';
+            }
+        })()
+    }
+
+    async function signOut() {
+        (async () => {
+            const response = await fetch('http://localhost:3000/leaveGame', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        })()
+        (async () => {
+            const response = await fetch('http://localhost:3000/signOut', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.status == 200) {
+                location.href = '/signIn';
+            }
+        })()
+    }
+
+    async function submitBoard() {
+        // Make Sure All Ship Positions Present
+        let missing = false;
+
+        if (shipLoc['Battleship'].length == 0 || shipLoc['Carrier'].length == 0 || shipLoc['Cruiser'].length == 0 || shipLoc['Destroyer'].length == 0 || shipLoc['Submarine'].length == 0) {
+            missing = true;
+        }
+
+        if (missing) {
+            alert("All Ships Must Be Positioned Before Submitting!");
+        }
+        else {
+            const myBoard = document.getElementById('myShips');
+            const myBody = {
+                "userPositions": shipLoc
+            };
+
+            (async () => {
+                const response = await fetch('http://localhost:3000/submitBoard', {
+                    method: 'PUT',
+                    body: JSON.stringify(myBody), // string or object
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const myJson = await response.json(); //extract JSON from the http response
+                // do something with myJson
+                if (response.status == 200) {
+                    // Remove Submit Button
+                    document.getElementById('submitBoardDiv').hidden = true;
+                    // Freeze Ship Positions
+                    let Battleship = document.getElementById('Battleship');
+                    let Carrier = document.getElementById('Carrier');
+                    let Cruiser = document.getElementById('Cruiser');
+                    let Destroyer = document.getElementById('Destroyer');
+                    let Submarine = document.getElementById('Submarine');
+
+                    Battleship.setAttribute('onmousedown', null);
+                    Carrier.setAttribute('onmousedown', null);
+                    Cruiser.setAttribute('onmousedown', null);
+                    Destroyer.setAttribute('onmousedown', null);
+                    Submarine.setAttribute('onmousedown', null);
+                }
+                else {
+                    alert("Ship Submission Failed, Please Try Again");
+                }
+            })()
+        }
+    }
+
+    async function submitTurn() {
+        // Check To Make Sure It's My Turn
+
+        // Check To Make Sure Cell Is Selected
+        if (isSelected == '') {
+            alert('You Must Select A Tile Before Submitting Your Turn!')
+        }
+        else {
+            const myBody = {
+                "gameID": '6390241d5b6ad2ea1df7720f',
+                "selectedTile": isSelected
+            };
+
+            (async () => {
+                const response = await fetch('http://localhost:3000/submitTurn', {
+                    method: 'PUT',
+                    body: JSON.stringify(myBody), // string or object
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const myJson = await response.json(); //extract JSON from the http response
+                // do something with myJson
+                if (response.status == 200) {
+                    console.log('200');
+                    console.log(myJson);
+
+                    // Remove submit button if you can figure out the long running processes
+                    submitTurnButton.hidden = true;
+                    // Update board with red or green for hit or miss
+                    if (myJson['miss'] != undefined) {
+                        document.getElementById(`their${myJson['miss']}`).style.fill = 'red';
+                        document.getElementById(`their${myJson['miss']}`).setAttribute('onmousedown', null);
+                        isSelected = "";
+                    }
+                    else {
+                        keys = Object.keys(myJson);
+                        document.getElementById(`their${myJson[keys[0]]}`).style.fill = 'green';
+                        document.getElementById(`their${myJson[keys[0]]}`).setAttribute('onmousedown', null);
+                        isSelected = "";
+                        
+                        // Check If Win
+                        if (myJson[keys[1]].length > 0) {
+                            if (myJson[keys[1]]) {
+                                alert('You Win!');
+                                leaveGame();
+                            }
+                            else if (myJson[keys[1]]) {
+                                alert('You Lose!');
+                                leaveGame();
+                            }
+                        }
+                    }
+
+                }
+                else if (response.status == 500) {
+                    alert("Turn Submission Failed, Please Try Again");
+                }
+                else {
+                    alert("Ship Submission Failed, Please Try Again");
+                }
+            })()
+        }
+    }
+
+</script>
+
+</html>

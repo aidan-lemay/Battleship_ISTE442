@@ -1,0 +1,127 @@
+/* Battleship Palette Colors */
+:root {
+    --drkBlu: #4086AA;
+    --lteBlu: #91C3DC;
+    --drkGrn: #87907D;
+    --lteGrn: #AAB6A2;
+    --drkGry: #555555;
+    --lteGry: #666666;
+    --silver: #C4C4C4;
+}
+
+/* Default Classes */
+body {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    color: white;
+    font-family: 'Courier New', monospace;
+}
+textarea {
+    width: 100%;
+    height: 75px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    resize: none;
+    font-size: larger;
+}
+input[type=button],
+input[type=submit],
+input[type=reset] {
+    background-color: var(--drkBlu);
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    font-size: larger;
+}
+
+/* Custom Classes */
+.center-body {
+    width: 75%;
+    background-color: var(--lteGry);
+    border-radius: 5px;
+    padding: 5px;
+}
+.barButtons {
+    display: flex;
+    justify-content: center;
+}
+.gameStart {
+    font-size: xx-large;
+    padding: 10px;
+    background-color: var(--drkBlu);
+    border: none;
+    color: black;
+    text-decoration: none;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.logOut {
+    font-size: xx-large;
+    padding: 10px;
+    background-color: var(--drkGrn);
+    border: none;
+    color: black;
+    text-decoration: none;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.chatbox {
+    background-color: whitesmoke;
+    padding: 5px;
+    border-radius: 5px;
+    justify-content: flex-start;
+}
+.fromMe {
+    margin: 5px;
+    font-size: larger;
+    border-radius: 5px;
+    padding: 20px;
+    color: white;
+    background-color: var(--drkGrn);
+    text-align: right;
+}
+.fromOther {
+    margin: 5px;
+    font-size: larger;
+    border-radius: 5px;
+    padding: 20px;
+    color: white;
+    background-color: var(--drkBlu);
+    text-align: left;
+}
+.fromSystem {
+    margin: 5px;
+    font-size: larger;
+    border-radius: 5px;
+    padding: 20px;
+    color: white;
+    background-color: var(--drkGry);
+    text-align: left;
+}
+.sendBox {
+    background-color: white;
+    width: 100%;
+}
+.joinTable, th, tr, td {
+    border: 1px solid black;
+    color: black;
+}
+th, td {
+    padding: 10px;
+}
+.status {
+    font-size: x-large;
+    color: white;
+}
+.startGame {
+    cursor: pointer;
+}

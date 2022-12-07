@@ -1,0 +1,68 @@
+.error {
+    color: red;
+}
+
+.signIn {
+    margin-top: 50px;
+}
+
+#nameBox {
+    padding: 50px 15px;
+    background: #fff;
+    box-shadow: 0px 0px 8px #c5c5c5;
+    border-radius: 2px;
+    width:50%;
+    text-align: center;
+    margin: auto;
+    margin-top: 10%;
+}
+
+.inputT {
+    padding: 8px 15px;
+    outline: none;
+    border: none;
+    box-shadow: 0px 0px 21px #cad6e2;
+    border-radius: 100px;
+    width: 300px;
+    margin: 15px 0px;
+}
+
+.inputS {
+    border: none;
+    background: #4086AA;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 100px;
+    text-decoration: none;
+    box-shadow: 0px 0px 21px #91C3DC;
+    outline: none;
+}
+
+.inputS:hover,
+.inputS:focus {
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    cursor: pointer;
+    background: #91C3DC;
+}
+
+.inputI {
+    border: none;
+    background: #87907D;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 100px;
+    text-decoration: none;
+    box-shadow: 0px 0px 21px #AAB6A2;
+    outline: none;
+}
+
+.inputI:hover,
+.inputI:focus {
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    cursor: pointer;
+    background: #AAB6A2;
+}
