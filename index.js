@@ -92,6 +92,4 @@ app.use('/highestID', auth, highestID);
 app.use('/checkTurn', auth, checkTurn);
 app.use('/leaveGame', auth, leaveGame);
 
-app.listen(3000, () => {
-    console.log(`Server Started at ${3000}`)
-})
+app.listen(process.env.PORT || 5000)
