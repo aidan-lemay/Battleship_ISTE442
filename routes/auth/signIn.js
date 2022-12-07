@@ -29,21 +29,14 @@ router.post('/', async (req, res) => {
                     { user_id: user._id, email },
                     process.env.JWT_KEY,
                     {
-                        expiresIn: "2h",
+                        expiresIn: "24h",
                     }
                 );
 
                 // Update token in DB
                 await Users.updateOne({"_id": user._id}, {$set: {token: token}});
 
-                // user
-                // res.status(200).json({
-                //     "_id": user._id,
-                //     "token": user.token,
-                //     "fName": user.fName,
-                //     "lName": user.lName
-                // });
-                res.writeHead(302, { "set-cookie": ["token=" + token, "name=" + user.fName + " " + user.lName],  "Location": '/chat' });
+                res.writeHead(302, { "set-cookie": ["token=" + token, "name=" + user.fName + " " + user.lName, "uid=" + user._id],  "Location": '/chat' });
                 return res.end();
             }
             else {

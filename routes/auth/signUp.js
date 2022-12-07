@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
                     { user_id: user._id, email },
                     process.env.JWT_KEY,
                     {
-                        expiresIn: "2h",
+                        expiresIn: "24h",
                     }
                 );
 
@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
                 //     "fName": user.fName,
                 //     "lName": user.lName
                 // });
-                res.writeHead(302, { "set-cookie": ["token=" + token, "name=" + user.fName + " " + user.lName],  "Location": '/chat' });
+                res.writeHead(302, { "set-cookie": ["token=" + token, "name=" + user.fName + " " + user.lName, "uid=" + user._id],  "Location": '/chat' });
                 return res.end();
             }
         }

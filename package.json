@@ -27,6 +27,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.3",
     "mysql": "^2.18.1",
+    "node-fetch": "^3.3.0",
+    "nodemon": "^2.0.20",
     "serve-handler": "^6.1.5",
     "websocket": "^1.0.34",
     "ws": "^8.11.0"

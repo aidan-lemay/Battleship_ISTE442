@@ -3,7 +3,8 @@
 
 <head>
     <title>Battleship - Chat</title>
-    <link rel="stylesheet" href="./css/styles.css"></link>
+    <link rel="stylesheet" href="./css/styles.css">
+    </link>
     <script src="./js/chatFunction.js"></script>
 </head>
 
@@ -13,15 +14,15 @@
         <hr />
 
         <div class="barButtons">
-            <div class="gameStart">
-                <a class="gameStart" onclick="getGame()">START A NEW GAME</a>
+            <div class="gameStart" id="gameStartBtn">
+                <a class="gameStart" onclick="getGame()">ENTER GAME</a>
             </div>
-            
+
             <div class="logOut">
                 <a class="logOut" onclick="signOut()">LOGOUT</a>
             </div>
         </div>
-        
+
         <div class="chat-zone">
             <p class="status" id="userName">Logged In As: </p>
 
@@ -31,44 +32,88 @@
             </div>
             <p class="status" id="status"></p>
         </div>
-        <div class="game-zone">
-            <h3>Users Online:</h3>
+        <div class="game-zone" id="game-zone">
+            <h3 id="usersOnline"></h3>
             <hr>
-            <a class="startGame" onclick="startGame()">Start Game With </a>
+            <div id="gameStartArea" class="startGame"></div>
         </div>
 
     </div>
 
     <script type="text/javascript">
+
+        let startButton = document.getElementById('gameStartBtn');
+        let usersOnline = document.getElementById('game-zone');
+
         function getGame() {
             location.href = '/game';
         }
 
         async function signOut() {
             (async () => {
-                    const response = await fetch('http://localhost:3000/signOut', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
+                const response = await fetch('http://localhost:3000/signOut', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.status == 200) {
+                    location.href = '/signIn';
+                }
+            })()
+        }
+        // Get List Of Users Not In Game
+        const shownIDs = [];
+        setInterval(async () => {
+            (async () => {
+                const response = await fetch('http://localhost:3000/getFreeUsers', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const myJson = await response.json();
+                const output = document.getElementById('gameStartArea');
+                const numOut = document.getElementById('usersOnline');
+                if (response.status == 200) {
+
+                    for (const element of myJson) {
+                        let name = element.fName + " " + element.lName;
+                        let uid = element._id;
+                        if (!shownIDs.includes(uid)) {
+                            let html = `<a class="startGame" id="" onclick="startGame('${uid}')">Start Game With ${name}</a><br /><br />`;
+                            output.insertAdjacentHTML('beforeend', (html));
+                            shownIDs.push(uid);
+
+                            numOut.innerText = `Users Online: ${shownIDs.length}`;
                         }
-                    });
-                        
-                    if (response.status == 400) {
-                        errorOutput.innerText = "All Inputs Are Required";
+
                     }
-                    else if (response.status == 409) {
-                        errorOutput.innerText = "Email Already Exists - Please Log In";
+                }
+            })();
+
+            // If i'm in a game, start the process and hide the game button
+            (async () => {
+                const response = await fetch('http://localhost:3000/getMyStatus', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                    else if (response.status == 302) {
-                        // const id = response._id;
-                        // const token = response.token;
-                        // const name = `${response.fName} ${response.lName}`;
+                });
+                const statJson = await response.json(); //extract JSON from the http response
+                if (response.status == 200) {
+                    if (statJson.game) {
+                        startButton.hidden = false;
+                        usersOnline.hidden = true;
                     }
                     else {
-                        errorOutput.innerText = "An Error Occurred, Please Try Again";
+                        startButton.hidden = true;
+                        usersOnline.hidden = false;
                     }
-                })();
-        }
+                }
+            })();
+        }, 1000);
+
     </script>
 </body>
 

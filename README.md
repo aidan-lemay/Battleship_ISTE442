@@ -2,9 +2,12 @@
 
 ## Running the Client Server and Frontend
 > Local Hosting
-* CD into `./Client/src` and run `php -S localhost:8000`
-* In another terminal, also from the project root, run `php ./Client/bin/chat-server.php`
-* In yet another terminal, from `./Server/`, run `npm run start`
+* From root, run `npm run start`
+* In another terminal from root, run `node chat-server.js`
+
+> Using PM2
+* Install PM2 with `npm install -g pm2`
+* Start the API from the root folder with `
 
 ## Styleguides and information
 > Color Scheme
@@ -22,7 +25,7 @@
 - [ ] See who's online, take from websocket list? Write into DB?
 - [ ] Move chat logic to server - Strip special characters and encode before sending to DB, change local chat option to it must come from the server instead of being directly written to the client.
 - [ ] Users need to be able to request to start games with other users
-- [ ] Game needs to be able to submit boards
+- [x] Game needs to be able to submit boards
 - [ ] Chat needs to be added to game page
 - [ ] ERROR HANDLING!
 - [ ] Make sure XSS / SQL Injection isn't easy

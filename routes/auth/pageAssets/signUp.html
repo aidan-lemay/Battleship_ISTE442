@@ -73,9 +73,6 @@
                         'Content-Type': 'application/json'
                     }
                 });
-
-                console.log(response.status);
-                
                 if (response.status == 400) {
                     errorOutput.innerText = "All Inputs Are Required";
                 }

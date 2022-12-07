@@ -6,6 +6,7 @@
     --lteGrn: #AAB6A2;
     --drkGry: #555555;
     --lteGry: #666666;
+    --drkRed: #772E25;
     --silver: #C4C4C4;
 }
 
@@ -75,6 +76,17 @@ svg text{
     font-size: xx-large;
     padding: 10px;
     background-color: var(--drkGrn);
+    border: none;
+    color: black;
+    text-decoration: none;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.leaveGame {
+    font-size: xx-large;
+    padding: 10px;
+    background-color: var(--drkRed);
     border: none;
     color: black;
     text-decoration: none;

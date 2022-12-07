@@ -6,22 +6,82 @@ const boardSchema = new mongoose.Schema({
         required: true,
         type: ObjectId
     },
-    user1Ships: {
+    user1Board: {
         required: true,
-        type: String
+        type: Object
+    },
+    user1Submit: {
+        required: false,
+        type: Boolean,
+        default: false
+    },
+    user1Turn: {
+        required: false,
+        type: Boolean,
+        default: false
+    },
+    user1Plays: {
+        required: false,
+        type: Object
+    },
+    user1Hits: {
+        required: false,
+        type: Number,
+        default: 0
+    },
+    user1Win: {
+        required: false,
+        type: Boolean,
+        default: false
     },
     user2ID: {
         required: true,
         type: ObjectId
     },
-    user2Ships: {
+    user2Board: {
         required: true,
-        type: String
+        type: Object
+    },
+    user2Submit: {
+        required: false,
+        type: Boolean,
+        default: false
+    },
+    user2Turn: {
+        required: false,
+        type: Boolean,
+        default: false
+    },
+    user2Plays: {
+        required: false,
+        type: Object
+    },
+    user2Hits: {
+        required: false,
+        type: Number,
+        default: 0
+    },
+    user2Win: {
+        required: false,
+        type: Boolean,
+        default: false
+    },
+    winningID: {
+        required: false,
+        type: ObjectId
+    },
+    losingID: {
+        required: false,
+        type: ObjectId
+    },
+    lastUpdate: {
+        required: false,
+        type: Date
     },
     chatMessages: {
         fromUser: {
             required: false,
-            type: Number
+            type: ObjectId
         },
         text: {
             required: false,
@@ -31,25 +91,21 @@ const boardSchema = new mongoose.Schema({
             required: false,
             type: Date
         }
-    },
-    timeStamp: {
-        required: true,
-        type: Date
     }
 }, {collection: "gameBoards"});
 
 const chatSchema = new mongoose.Schema({
-    id: {
-        required: true,
-        type: Number
-    },
     fromUser: {
         required: true,
-        type: Number
+        type: ObjectId
+    },
+    msg: {
+        required: true,
+        type: String
     },
     timeStamp: {
         required: true,
-        type: Number
+        type: Date
     }
 }, {collection: "chatData"});
 
@@ -73,6 +129,16 @@ const userSchema = new mongoose.Schema({
     hPass: {
         required: true,
         type: String
+    },
+    inGame: {
+        required: false,
+        type: Boolean,
+        default: false
+    },
+    requestedBy: {
+        required: false,
+        type: ObjectId,
+        default: null
     }
 }, {collection: "userData"});
 
